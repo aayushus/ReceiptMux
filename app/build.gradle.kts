@@ -138,7 +138,7 @@ dependencies {
     implementation("eu.agno3.jcifs:jcifs-ng:2.1.9") {
         exclude(group = "org.bouncycastle", module = "bcprov-jdk15on")
     }
-    implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.84")
     implementation("com.google.mlkit:text-recognition:16.0.1")
     implementation("org.opencv:opencv:4.12.0")
 
