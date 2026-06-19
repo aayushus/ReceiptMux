@@ -12,6 +12,17 @@ android {
     namespace = "com.scantoftp"
     compileSdk = 35
 
+    val releaseStoreFile = System.getenv("RELEASE_STORE_FILE")
+    val releaseStorePassword = System.getenv("RELEASE_STORE_PASSWORD")
+    val releaseKeyAlias = System.getenv("RELEASE_KEY_ALIAS")
+    val releaseKeyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+    val hasReleaseSigning = listOf(
+        releaseStoreFile,
+        releaseStorePassword,
+        releaseKeyAlias,
+        releaseKeyPassword,
+    ).all { !it.isNullOrBlank() }
+
     defaultConfig {
         applicationId = "com.receiptmux"
         minSdk = 26
@@ -30,10 +41,24 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            if (hasReleaseSigning) {
+                storeFile = file(releaseStoreFile!!)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -58,6 +83,12 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
+    testOptions {
+        unitTests {
+            isReturnDefaultValues = true
         }
     }
 }
@@ -101,7 +132,13 @@ dependencies {
     implementation("androidx.camera:camera-view:1.4.0")
 
     implementation("commons-net:commons-net:3.12.0")
-    implementation("eu.agno3.jcifs:jcifs-ng:2.1.9")
+    // jcifs-ng pulls in the vulnerable bcprov-jdk15on:1.69 (CVE-2024-29857). That
+    // artifact line ends at 1.70, so we exclude it and pin the renamed, patched
+    // bcprov-jdk18on (same org.bouncycastle.* packages, built for Java 8+).
+    implementation("eu.agno3.jcifs:jcifs-ng:2.1.9") {
+        exclude(group = "org.bouncycastle", module = "bcprov-jdk15on")
+    }
+    implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
     implementation("com.google.mlkit:text-recognition:16.0.1")
     implementation("org.opencv:opencv:4.12.0")
 

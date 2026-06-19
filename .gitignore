@@ -20,6 +20,7 @@ keystore.properties
 secrets.properties
 google-services.json
 service-account*.json
+release-signing/
 
 # IDE/editor
 .idea/
