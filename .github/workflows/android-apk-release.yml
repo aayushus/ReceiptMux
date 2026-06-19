@@ -7,13 +7,17 @@ on:
       # Intentionally exact: this workflow only releases v0.2, not v0.2.x.
       - "v0.2"
 
+permissions:
+  contents: write
+
+concurrency:
+  group: android-release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build-release-apk:
     name: Build signed release APK
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
 
     steps:
       - name: Checkout
@@ -24,12 +28,28 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+          cache: gradle
 
       - name: Make Gradle executable
         run: chmod +x ./gradlew
 
       - name: Run unit tests
         run: ./gradlew :app:testDebugUnitTest
+
+      - name: Run release lint
+        run: ./gradlew :app:lintRelease
+
+      - name: Validate release signing secrets
+        env:
+          ANDROID_RELEASE_KEYSTORE_BASE64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_BASE64 }}
+          ANDROID_RELEASE_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_RELEASE_KEYSTORE_PASSWORD }}
+          ANDROID_RELEASE_KEY_ALIAS: ${{ secrets.ANDROID_RELEASE_KEY_ALIAS }}
+          ANDROID_RELEASE_KEY_PASSWORD: ${{ secrets.ANDROID_RELEASE_KEY_PASSWORD }}
+        run: |
+          test -n "$ANDROID_RELEASE_KEYSTORE_BASE64"
+          test -n "$ANDROID_RELEASE_KEYSTORE_PASSWORD"
+          test -n "$ANDROID_RELEASE_KEY_ALIAS"
+          test -n "$ANDROID_RELEASE_KEY_PASSWORD"
 
       - name: Decode release keystore
         run: |
@@ -54,3 +74,14 @@ jobs:
           tag_name: v0.2
           name: ReceiptMux v0.2
           files: release/ReceiptMux-v0.2-release.apk
+
+      - name: Upload release reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-reports
+          if-no-files-found: ignore
+          path: |
+            app/build/reports/tests/testDebugUnitTest/
+            app/build/reports/lint-results-release.html
+            app/build/reports/lint-results-release.xml

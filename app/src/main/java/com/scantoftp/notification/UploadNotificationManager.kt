@@ -1,13 +1,17 @@
 package com.scantoftp.notification
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import com.scantoftp.MainActivity
@@ -76,6 +80,7 @@ class UploadNotificationManager @Inject constructor(
             notifications.cancel(QUEUE_NOTIFICATION_ID)
             return
         }
+        if (!canPostNotifications()) return
 
         val contentIntent = PendingIntent.getActivity(
             context,
@@ -96,7 +101,21 @@ class UploadNotificationManager @Inject constructor(
             .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
             .build()
 
-        notifications.notify(QUEUE_NOTIFICATION_ID, notification)
+        postQueueNotification(notifications, notification)
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun postQueueNotification(
+        notifications: NotificationManagerCompat,
+        notification: android.app.Notification,
+    ) {
+        if (!canPostNotifications()) return
+        runCatching { notifications.notify(QUEUE_NOTIFICATION_ID, notification) }
+    }
+
+    private fun canPostNotifications(): Boolean {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
     }
 
     companion object {

@@ -10,6 +10,10 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <!--
         Signature-level permission applied to the internal AndroidX App Startup
         provider below. The provider is already exported="false" (so other apps
