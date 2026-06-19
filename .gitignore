@@ -1,0 +1,40 @@
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Android generated files
+local.properties
+captures/
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+*.hprof
+
+# Signing and credentials
+*.jks
+*.keystore
+keystore.properties
+secrets.properties
+google-services.json
+service-account*.json
+
+# IDE/editor
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Kotlin/Java tooling
+.kotlin/
+kotlin-js-store/
+
+# Logs
+*.log
+
+# Test/output artifacts
+app/schemas/
+app/build/reports/
+app/build/outputs/
