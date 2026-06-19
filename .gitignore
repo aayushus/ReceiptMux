@@ -25,6 +25,7 @@ service-account*.json
 .idea/
 *.iml
 .vscode/
+.cursor/skills/android-apk-release-workflow/
 .DS_Store
 
 # Kotlin/Java tooling
