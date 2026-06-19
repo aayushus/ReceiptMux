@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        launchRoute = intent?.getStringExtra(EXTRA_START_ROUTE)
+        launchRoute = sanitizeRoute(intent?.getStringExtra(EXTRA_START_ROUTE))
         requestNotificationPermissionIfNeeded()
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
@@ -40,11 +40,19 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        launchRoute = intent.getStringExtra(EXTRA_START_ROUTE)
+        launchRoute = sanitizeRoute(intent.getStringExtra(EXTRA_START_ROUTE))
     }
+
+    // This activity is exported (it is the LAUNCHER entry point), so the start-route
+    // extra is attacker-controllable input from arbitrary apps. Only honor it when it
+    // matches a known, safe deep-link target; otherwise fall back to the default screen.
+    private fun sanitizeRoute(raw: String?): String? =
+        raw?.takeIf { it in ALLOWED_START_ROUTES }
 
     companion object {
         private const val EXTRA_START_ROUTE = "start_route"
+
+        private val ALLOWED_START_ROUTES = setOf(Destination.Queue.route)
 
         fun createQueueIntent(context: Context): Intent {
             return Intent(context, MainActivity::class.java)

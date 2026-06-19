@@ -10,11 +10,25 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
+    <!--
+        Signature-level permission applied to the internal AndroidX App Startup
+        provider below. The provider is already exported="false" (so other apps
+        cannot reach it); this adds explicit, scanner-verifiable access control.
+        protectionLevel="signature" means only apps signed with the same key
+        could ever hold it, and same-process startup access is unaffected.
+    -->
+    <permission
+        android:name="${applicationId}.permission.INTERNAL_STARTUP"
+        android:protectionLevel="signature" />
+
     <application
         android:name=".ScanToFtpApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ScanToFtp">
@@ -28,6 +42,8 @@
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
             android:exported="false"
+            android:permission="${applicationId}.permission.INTERNAL_STARTUP"
+            tools:replace="android:permission"
             tools:node="merge">
             <meta-data
                 android:name="androidx.work.WorkManagerInitializer"
@@ -35,6 +51,12 @@
                 tools:node="remove" />
         </provider>
 
+        <!--
+            exported="true" is required: this is the LAUNCHER activity and must be
+            startable by the system Home app. The only intent input it reads
+            (start_route extra) is validated against an allowlist in MainActivity,
+            so untrusted external intents cannot drive arbitrary navigation.
+        -->
         <activity
             android:name="com.scantoftp.MainActivity"
             android:exported="true"

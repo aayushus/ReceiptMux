@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
   push:
     tags:
-      # Intentionally exact: this workflow only releases v0.1, not v0.1.x.
-      - "v0.1"
+      # Intentionally exact: this workflow only releases v0.2, not v0.2.x.
+      - "v0.2"
 
 jobs:
   build-release-apk:
@@ -46,11 +46,11 @@ jobs:
       - name: Rename APK
         run: |
           mkdir -p release
-          cp app/build/outputs/apk/release/app-release.apk release/ReceiptMux-v0.1-release.apk
+          cp app/build/outputs/apk/release/app-release.apk release/ReceiptMux-v0.2-release.apk
 
       - name: Publish GitHub release
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
         with:
-          tag_name: v0.1
-          name: ReceiptMux v0.1
-          files: release/ReceiptMux-v0.1-release.apk
+          tag_name: v0.2
+          name: ReceiptMux v0.2
+          files: release/ReceiptMux-v0.2-release.apk

@@ -1,2 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-extraction-rules />
+<!--
+  Android 12+ (API 31+) backup/transfer policy. The app stores SMB/FTP credentials
+  in EncryptedSharedPreferences, so we exclude all app data from both cloud backup
+  and device-to-device transfer. Combined with android:allowBackup="false", no app
+  data leaves the device through the backup framework.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" />
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" />
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </device-transfer>
+</data-extraction-rules>

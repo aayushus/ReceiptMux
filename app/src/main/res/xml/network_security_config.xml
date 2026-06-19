@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Network security policy.
+
+  - cleartextTrafficPermitted="false": all HTTP-stack traffic (HttpsURLConnection,
+    OkHttp, Cronet, etc.) must use TLS. This is the SAST-recommended baseline and
+    prevents accidental plaintext HTTP and downgrade/MITM attacks.
+  - trust-anchors: validate server certificates against the device's system CA store.
+
+  NOTE: FTP (Apache Commons Net) and SMB (jcifs-ng) uploads use raw sockets and are
+  NOT affected by this policy, so plain-FTP/SMB to a local NAS continues to work.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
