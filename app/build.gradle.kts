@@ -108,6 +108,12 @@ configurations.all {
             useVersion("4.1.118.Final")
             because("Patched netty for build-time test platform (CVE remediation)")
         }
+        // protobuf-java is likewise only a transitive of the build-time test platform
+        // (not the shipped APK); pin to a patched release to clear flagged CVEs.
+        if (requested.group == "com.google.protobuf" && requested.name == "protobuf-java") {
+            useVersion("3.25.5")
+            because("Patched protobuf-java for build-time test platform (CVE remediation)")
+        }
     }
 }
 
