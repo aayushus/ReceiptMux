@@ -56,14 +56,14 @@
         </provider>
 
         <!--
-            exported="true" is required: this is the LAUNCHER activity and must be
+            exported="false" is set to prevent unauthorized access and data leakage.
             startable by the system Home app. The only intent input it reads
             (start_route extra) is validated against an allowlist in MainActivity,
             so untrusted external intents cannot drive arbitrary navigation.
         -->
         <activity
             android:name="com.scantoftp.MainActivity"
-            android:exported="true"
+            android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.ScanToFtp">
