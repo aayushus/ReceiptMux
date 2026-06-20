@@ -7,8 +7,7 @@ on:
       # Intentionally exact: this workflow only releases v0.2, not v0.2.x.
       - "v0.2"
 
-permissions:
-  contents: write
+permissions: {}
 
 concurrency:
   group: android-release-${{ github.ref }}
@@ -18,6 +17,8 @@ jobs:
   build-release-apk:
     name: Build signed release APK
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
