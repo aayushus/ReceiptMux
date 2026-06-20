@@ -97,6 +97,20 @@ room {
     schemaDirectory("$projectDir/schemas")
 }
 
+configurations.all {
+    resolutionStrategy.eachDependency {
+        // Netty is pulled in transitively only by the Android Gradle "Unified Test
+        // Platform" (via grpc-netty) for on-host instrumented-test orchestration; it
+        // is never part of the shipped APK. Pin every io.netty module to a patched
+        // 4.1.x to clear CVEs in that build-time tooling without adding netty to the
+        // app runtime. Patch-level bump, so it stays compatible with grpc-netty.
+        if (requested.group == "io.netty") {
+            useVersion("4.1.118.Final")
+            because("Patched netty for build-time test platform (CVE remediation)")
+        }
+    }
+}
+
 dependencies {
     val composeBom = platform("androidx.compose:compose-bom:2024.10.01")
 
