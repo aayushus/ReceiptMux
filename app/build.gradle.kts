@@ -149,6 +149,9 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.52")
     kapt("com.google.dagger:hilt-compiler:2.52")
 
+    // Pin transitive dependency to resolve vulnerability
+    implementation("io.netty:netty-codec-http2:4.1.100.Final")
+
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
     testImplementation("org.mockito:mockito-core:5.11.0")
