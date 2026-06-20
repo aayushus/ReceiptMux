@@ -100,6 +100,8 @@ room {
 dependencies {
     val composeBom = platform("androidx.compose:compose-bom:2024.10.01")
 
+    implementation("com.google.protobuf:protobuf-java:3.25.5")
+
     implementation("androidx.core:core-ktx:1.15.0")
     androidTestImplementation("androidx.test:runner:1.6.2")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
